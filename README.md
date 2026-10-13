@@ -2,7 +2,7 @@
 
 Choose which web browser opens HTTP and HTTPS links in the Obsidian desktop app, independently of the operating system's default browser.
 
-> **Status:** early development version (0.1.1). Not yet validated in a running Obsidian installation. The repository is not yet listed in the Community directory.
+> **Status:** Public beta 0.2.0. Tested successfully on Windows with Chrome as the primary browser and Edge for Alt-click. Linux and macOS remain untested. Not yet in the Community directory.
 
 ## Features
 
@@ -14,6 +14,12 @@ Choose which web browser opens HTTP and HTTPS links in the Obsidian desktop app,
 - Work on Windows, Linux, and macOS (browser must be installed).
 - If launching fails, attempt to open the link in the system default browser.
 - Internal Obsidian links and non-HTTP(S) links are not intercepted.
+
+## Beta installation
+
+Once this repository is public, install [BRAT](https://github.com/TfTHacker/obsidian42-brat), select **Add a beta plugin for testing**, and enter **Radouch/obsidian-external-browser**. Alternatively, download both **main.js** and **manifest.json** from the GitHub Releases page and follow the manual installation instructions below.
+
+Report bugs through [GitHub Issues](https://github.com/Radouch/obsidian-external-browser/issues). Include your Obsidian version, OS, view mode, browser configuration and the result of both diagnostic commands.
 
 ## Limitations
 
