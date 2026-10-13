@@ -25,10 +25,13 @@ export function installWindowOpenRouter(
   now: () => number = Date.now
 ): WindowOpenRouter {
   const previousOpen = win.open;
+  let active = true;
   let recentClick: { time: number; modifiers: ModifierKeys; id: number } | null = null;
   let nextClickId = 0;
   let lastRouted: { id: number; url: string } | null = null;
   const windowOpen: Window['open'] = (url, target, features) => {
+    // If another plugin retains this wrapper, unloading must still disable it.
+    if (!active) return previousOpen.call(win, url, target, features);
     const safeUrl = parseExternalUrl(url === undefined ? '' : String(url));
     const elapsed = recentClick ? now() - recentClick.time : Infinity;
     if (!safeUrl || !recentClick || elapsed < 0 || elapsed > 1500) {
@@ -61,6 +64,8 @@ export function installWindowOpenRouter(
       };
     },
     dispose(): void {
+      active = false;
+      recentClick = null;
       if (win.open === windowOpen) {
         win.open = previousOpen;
       }

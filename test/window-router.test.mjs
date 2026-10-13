@@ -78,3 +78,23 @@ test('restores original window.open on uninstall', () => {
   f.router.dispose();
   assert.equal(f.host.open, f.original);
 });
+
+test('cached window.open wrapper becomes inert after plugin unload', () => {
+  const f = fixture();
+  const retainedWrapper = f.host.open;
+  f.router.recordMouseEvent(noKeys);
+  f.router.dispose();
+  assert.equal(retainedWrapper('https://example.com'), f.popup);
+  assert.equal(f.routed.length, 0);
+  assert.equal(f.nativeCalls.length, 1);
+});
+
+test('non-http URLs are never rerouted', () => {
+  const f = fixture();
+  f.router.recordMouseEvent(noKeys);
+  for (const url of ['file:///C:/notes/test.html', 'javascript:alert(1)', 'mailto:author@example.org']) {
+    assert.equal(f.host.open(url), f.popup);
+  }
+  assert.equal(f.routed.length, 0);
+  assert.equal(f.nativeCalls.length, 3);
+});
