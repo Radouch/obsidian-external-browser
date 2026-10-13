@@ -1,0 +1,48 @@
+name: Publish beta release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - manifest.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Validate release versions
+        id: version
+        shell: bash
+        run: |
+          node -e "const m=require('./manifest.json'); const p=require('./package.json'); const v=require('./versions.json'); if (m.version!==p.version || v[m.version]!==m.minAppVersion || !/^\d+\.\d+\.\d+$/.test(m.version)) process.exit(1)"
+          echo "number=$(node -p "require('./manifest.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub pre-release if absent
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.number }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION exists; not overwriting published assets."
+            exit 0
+          fi
+          gh release create "$VERSION" \
+            main.js manifest.json \
+            --title "External Browser $VERSION (Beta)" \
+            --notes-file BETA_NOTES.md \
+            --target "$GITHUB_SHA" \
+            --prerelease
