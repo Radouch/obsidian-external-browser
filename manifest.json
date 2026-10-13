@@ -1,0 +1,10 @@
+{
+  "id": "external-browser",
+  "name": "External Browser",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Open external links in your preferred browser instead of the system default.",
+  "author": "Radouch",
+  "authorUrl": "https://github.com/Radouch",
+  "isDesktopOnly": true
+}
