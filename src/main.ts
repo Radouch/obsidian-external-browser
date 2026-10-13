@@ -6,7 +6,7 @@ import { ExternalBrowserSettingTab } from './settings';
 import { DEFAULT_SETTINGS, type BrowserSettings } from './types';
 
 export default class ExternalBrowserPlugin extends Plugin {
-  settings!: BrowserSettings;
+  declare settings: BrowserSettings;
   private readonly registeredDocuments = new WeakSet<Document>();
 
   async onload(): Promise<void> {
