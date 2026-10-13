@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a problem with External Browser
+title: "[Bug]: "
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Obsidian and plugin versions
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+    validations:
+      required: true
+  - type: textarea
+    id: browser
+    attributes:
+      label: Browser settings and modifier
+      description: Include whether both diagnostic browser commands work.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps and expected vs. actual behavior
+      description: Include Reading view, Live Preview or other link context.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output (optional)
+      description: Remove secrets, personal information and private URLs.
