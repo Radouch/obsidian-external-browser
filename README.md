@@ -11,7 +11,7 @@ Choose which web browser opens HTTP and HTTPS links in the Obsidian desktop app,
 - Open web links with the chosen browser using a process launch **without a shell**.
 - Catch both HTML anchor clicks and Obsidian's `window.open()` link handling shortly after user clicks.
 - Use Command palette → **External Browser: Test primary browser (open example.com)** or **Test alternative browser (open example.com)** to diagnose browser launch separately from click handling.
-- Work on Windows, Linux, and macOS (browser must be installed).
+- Provide Windows, Linux, and macOS browser launchers (so far tested only on Windows).
 - If launching fails, attempt to open the link in the system default browser.
 - Internal Obsidian links and non-HTTP(S) links are not intercepted.
 
@@ -23,7 +23,7 @@ Report bugs through [GitHub Issues](https://github.com/Radouch/obsidian-external
 
 ## Limitations
 
-- The plugin intercepts HTML links and `window.open()` calls made shortly after a user click (including some Live Preview links). In particular, links opened through other application APIs, keyboard-only triggers, or custom plugin handlers may remain unaffected. The `window.open()` interception is deliberately limited to 1.5 seconds after a mouse click to avoid breaking unrelated programmatic windows.
+- The plugin intercepts HTML links and `window.open()` calls made shortly after a user click (including some Live Preview links). In particular, links opened through other application APIs, keyboard-only triggers, or custom plugin handlers may remain unaffected. The `window.open()` interception is limited to 1.5 seconds after mouse input; other plugins using that API may conflict, and unrelated calls during that interval may be affected.
 - Browser installation detection is best-effort. On Windows standard installation locations are tried; on Linux executable names in `PATH` are tried; on macOS the system `open -a` launcher is used.
 - Launching a process does not guarantee the browser subsequently loads the page. Some failure modes may not be detected.
 - Custom browser paths accept an executable or command only, **not extra command-line arguments**. The URL is appended as one argument.
@@ -63,4 +63,4 @@ The plugin does not send telemetry or make its own network requests. Clicking a 
 
 ## Contributing
 
-Please test on your operating system and report reproducible problems with Obsidian version, OS, and browser. The license is MIT (see `LICENSE`). This is a clean-room implementation and does not copy code from the earlier Open Link With project.
+Please test on your operating system and report reproducible problems with Obsidian version, OS, and browser. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md). The license is MIT (see [LICENSE](LICENSE)). This implementation does not copy code from the earlier Open Link With project.
