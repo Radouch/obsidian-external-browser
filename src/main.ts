@@ -3,7 +3,10 @@ import { Notice, Plugin } from 'obsidian';
 import { launchBrowser } from './launch';
 import { parseExternalUrl, selectBrowser } from './routing';
 import { ExternalBrowserSettingTab } from './settings';
-import { DEFAULT_SETTINGS, type BrowserSettings } from './types';
+import { BROWSERS, DEFAULT_SETTINGS, type BrowserId, type BrowserSettings } from './types';
+import { installWindowOpenRouter } from './window-router';
+
+type ExternalBrowserId = Exclude<BrowserId, 'system'>;
 
 export default class ExternalBrowserPlugin extends Plugin {
   declare settings: BrowserSettings;
@@ -13,6 +16,17 @@ export default class ExternalBrowserPlugin extends Plugin {
     const saved = (await this.loadData()) as Partial<BrowserSettings> | null;
     this.settings = { ...DEFAULT_SETTINGS, ...(saved ?? {}) };
     this.addSettingTab(new ExternalBrowserSettingTab(this.app, this));
+
+    this.addCommand({
+      id: 'test-primary-browser',
+      name: 'Test primary browser (open example.com)',
+      callback: () => { void this.testBrowser(this.settings.primaryBrowser); }
+    });
+    this.addCommand({
+      id: 'test-alternative-browser',
+      name: 'Test alternative browser (open example.com)',
+      callback: () => { void this.testBrowser(this.settings.alternateBrowser); }
+    });
 
     this.registerDocument(document);
     this.registerEvent(this.app.workspace.on('window-open', (_workspaceWindow, window) => {
@@ -28,10 +42,25 @@ export default class ExternalBrowserPlugin extends Plugin {
     if (this.registeredDocuments.has(doc)) return;
     this.registeredDocuments.add(doc);
 
-    // Capture normal and middle-clicks before Obsidian's default link handler.
-    // registerDomEvent automatically cleans up both listeners on plugin unload.
-    this.registerDomEvent(doc, 'click', (event) => this.onLinkClick(event), { capture: true });
-    this.registerDomEvent(doc, 'auxclick', (event) => this.onLinkClick(event), { capture: true });
+    const win = doc.defaultView;
+    // Obsidian opens some editor links with window.open() rather than through
+    // an HTML anchor. Only route calls associated with a recent user click.
+    const router = win ? installWindowOpenRouter(
+      win,
+      () => this.settings,
+      (url, browser) => this.openLink(url, browser)
+    ) : null;
+    if (router) this.register(() => router.dispose());
+
+    const onClick = (event: MouseEvent): void => {
+      router?.recordMouseEvent(event);
+      this.onLinkClick(event);
+    };
+    // Capture mousedown as well: Obsidian may call window.open in a mouse handler
+    // before the subsequent click event fires.
+    this.registerDomEvent(doc, 'mousedown', (event) => router?.recordMouseEvent(event), { capture: true });
+    this.registerDomEvent(doc, 'click', onClick, { capture: true });
+    this.registerDomEvent(doc, 'auxclick', onClick, { capture: true });
   }
 
   private onLinkClick(event: MouseEvent): void {
@@ -41,20 +70,23 @@ export default class ExternalBrowserPlugin extends Plugin {
     if (!isMainClick && !isMiddleClick) return;
 
     const target = event.target;
-    if (!target || typeof (target as Element).closest !== 'function') return;
-    const anchor = (target as Element).closest<HTMLAnchorElement>('a[href]');
+    if (!(target instanceof Element)) return;
+    const anchor = target.closest<HTMLAnchorElement>('a[href], a[data-href]');
     if (!anchor || anchor.hasAttribute('download')) return;
-    const url = parseExternalUrl(anchor.getAttribute('href') ?? '');
+    const url = parseExternalUrl(anchor.getAttribute('href') ?? anchor.getAttribute('data-href') ?? '');
     if (!url) return;
 
     const browser = selectBrowser(this.settings, event);
     if (browser === 'system') return;
-
     event.preventDefault();
     event.stopImmediatePropagation();
+    this.openLink(url, browser);
+  }
+
+  private openLink(url: string, browser: ExternalBrowserId): void {
     void launchBrowser(url, browser, this.settings.customExecutable).catch(async (error: unknown) => {
-      console.error('[External Browser] Failed to open link', error);
-      new Notice('External Browser: launch failed; opening with the system browser.');
+      console.error('[External Browser] Failed to open link with ' + browser, error);
+      new Notice('External Browser: could not start ' + BROWSERS[browser] + '; using the system browser.');
       try {
         await shell.openExternal(url);
       } catch (fallbackError) {
@@ -62,5 +94,20 @@ export default class ExternalBrowserPlugin extends Plugin {
         new Notice('External Browser: unable to open the link.');
       }
     });
+  }
+
+  private async testBrowser(browser: BrowserId): Promise<void> {
+    const url = 'https://example.com/';
+    try {
+      if (browser === 'system') {
+        await shell.openExternal(url);
+      } else {
+        await launchBrowser(url, browser, this.settings.customExecutable);
+      }
+      new Notice('External Browser: launch request sent to ' + BROWSERS[browser] + '.');
+    } catch (error) {
+      console.error('[External Browser] Browser test failed', error);
+      new Notice('External Browser: failed to launch ' + BROWSERS[browser] + '. Check the developer console.');
+    }
   }
 }
