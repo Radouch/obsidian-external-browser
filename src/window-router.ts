@@ -1,4 +1,4 @@
-import { parseExternalUrl, selectBrowser, type ModifierKeys } from './routing';
+import { parseExternalUrl, selectBrowser, type ModifierKeys } from './routing.ts';
 import type { BrowserId, BrowserSettings } from './types';
 
 type ExternalBrowserId = Exclude<BrowserId, 'system'>;

@@ -70,8 +70,9 @@ export default class ExternalBrowserPlugin extends Plugin {
     if (!isMainClick && !isMiddleClick) return;
 
     const target = event.target;
-    if (!(target instanceof Element)) return;
-    const anchor = target.closest<HTMLAnchorElement>('a[href], a[data-href]');
+    // Popout windows have their own Element constructor (different JS realm).
+    if (!target || typeof (target as Element).closest !== 'function') return;
+    const anchor = (target as Element).closest<HTMLAnchorElement>('a[href], a[data-href]');
     if (!anchor || anchor.hasAttribute('download')) return;
     const url = parseExternalUrl(anchor.getAttribute('href') ?? anchor.getAttribute('data-href') ?? '');
     if (!url) return;
