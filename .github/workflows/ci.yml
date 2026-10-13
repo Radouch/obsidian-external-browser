@@ -13,9 +13,15 @@ jobs:
       - run: npm install
       - run: npm test
       - run: npm run build
+      - name: Read version
+        id: version
+        shell: bash
+        run: |
+          echo "number=$(node -p "require('./manifest.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
-          name: external-browser-0.1.1
+          name: external-browser-${{ steps.version.outputs.number }}
           path: |
             main.js
             manifest.json
+          if-no-files-found: error
