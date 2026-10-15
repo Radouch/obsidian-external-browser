@@ -1,6 +1,6 @@
-# External Browser 0.2.0 — Public beta
+# External Browser 0.2.1 — Community directory submission
 
-Beta release for Obsidian desktop. Not yet in the official Community directory.
+Early public version for Obsidian desktop, prepared for submission to the official Community directory. This is published as a normal GitHub release for compatibility with the directory validator; the plugin is still being tested on additional platforms.
 
 ## Features
 - Select Firefox, Chrome, Edge, Brave, a custom executable, or the system browser.

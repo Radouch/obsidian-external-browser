@@ -1,4 +1,4 @@
-name: Publish beta release
+name: Publish community-compatible release
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
         run: |
           node -e "const m=require('./manifest.json'); const p=require('./package.json'); const v=require('./versions.json'); if (m.version!==p.version || v[m.version]!==m.minAppVersion || !/^\d+\.\d+\.\d+$/.test(m.version)) process.exit(1)"
           echo "number=$(node -p "require('./manifest.json').version")" >> "$GITHUB_OUTPUT"
-      - name: Create GitHub pre-release if absent
+      - name: Create GitHub release if absent
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -42,7 +42,6 @@ jobs:
           fi
           gh release create "$VERSION" \
             main.js manifest.json \
-            --title "External Browser $VERSION (Beta)" \
+            --title "External Browser $VERSION" \
             --notes-file BETA_NOTES.md \
-            --target "$GITHUB_SHA" \
-            --prerelease
+            --target "$GITHUB_SHA"
