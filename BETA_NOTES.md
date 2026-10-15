@@ -1,8 +1,12 @@
-# External Browser 0.2.2 — Community review improvements
+# External Browser 0.2.3 — Compatibility correction
 
 Early public version for Obsidian desktop, prepared for submission to the official Community directory. This is published as a normal GitHub release for compatibility with the directory validator; the plugin is still being tested on additional platforms.
 
-## Changes in 0.2.2
+## Changes in 0.2.3
+- Fix Obsidian's `no-unsupported-api` validation: remove redundant 1.13-only API calls while retaining older versions support.
+- Preserve automatic saving and conditional visibility on Obsidian 1.13+.
+
+## Previous changes in 0.2.2
 - Reproducible npm dependencies with a lockfile and `npm ci`.
 - Build provenance attestations for `main.js` and `manifest.json`.
 - Searchable settings on Obsidian 1.13+, with legacy compatibility for older versions.

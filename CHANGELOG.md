@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3 — Compatibility correction
+- Remove redundant `setControlValue()` override that called Obsidian 1.13-only APIs despite a 1.5.0 minimum.
+- Allow declarative settings on 1.13+ to use automatic value saving and conditional visibility refresh.
+- Preserve the legacy `display()` fallback on older versions; browser link routing is unchanged.
+
 ## 0.2.2 — Community review improvements
 - Add locked npm dependencies and use `npm ci` in CI and release workflows.
 - Generate signed GitHub artifact attestations for published `main.js` and `manifest.json`.

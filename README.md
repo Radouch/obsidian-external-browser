@@ -2,7 +2,7 @@
 
 Choose which web browser opens HTTP and HTTPS links in the Obsidian desktop app, independently of the operating system's default browser.
 
-> **Status:** Public beta 0.2.2. Tested successfully on Windows with Chrome as the primary browser and Edge for Alt-click. Linux and macOS remain untested. Submitted for Community directory review; not yet approved.
+> **Status:** Public beta 0.2.3. Tested successfully on Windows with Chrome as the primary browser and Edge for Alt-click. Linux and macOS remain untested. Submitted for Community directory review; not yet approved.
 
 ## Features
 
