@@ -16,7 +16,7 @@ export class ExternalBrowserSettingTab extends PluginSettingTab {
   }
 
   // Obsidian 1.13+: searchable declarative settings.
-  // Keep display() below for pre-1.13 versions (minAppVersion is still 1.5.0).
+  // Older Obsidian versions use the display() fallback below.
   getSettingDefinitions(): SettingDefinitionItem[] {
     return [
       {
@@ -62,13 +62,6 @@ export class ExternalBrowserSettingTab extends PluginSettingTab {
         }
       }
     ];
-  }
-
-  async setControlValue(key: string, value: unknown): Promise<void> {
-    await super.setControlValue(key, value);
-    if (key === 'primaryBrowser' || key === 'alternateBrowser') {
-      this.refreshDomState();
-    }
   }
 
   // Fallback for Obsidian versions older than 1.13.0.
