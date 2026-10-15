@@ -8,7 +8,7 @@ steps. Check whether both diagnostic browser commands work.
 
 Node.js 22+:
 
-    npm install
+    npm ci
     npm test
     npm run build
 
@@ -24,6 +24,6 @@ Avoid telemetry, self-updaters, and shell-based URL interpolation.
 
 ## Releases
 
-Keep manifest.json, package.json and versions.json in sync. Pushing a
+Keep manifest.json, package.json, versions.json and package-lock.json in sync. Pushing a
 new manifest version to main creates a GitHub pre-release (after tests)
 with both required assets. Never reuse a published release version.

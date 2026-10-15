@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, type SettingDefinitionItem } from 'obsidian';
 import type ExternalBrowserPlugin from './main';
 import { BROWSERS, type BrowserId, type Modifier } from './types';
 
@@ -15,6 +15,63 @@ export class ExternalBrowserSettingTab extends PluginSettingTab {
     super(app, plugin);
   }
 
+  // Obsidian 1.13+: searchable declarative settings.
+  // Keep display() below for pre-1.13 versions (minAppVersion is still 1.5.0).
+  getSettingDefinitions(): SettingDefinitionItem[] {
+    return [
+      {
+        name: 'Browser for external links',
+        desc: 'Applies to HTTP and HTTPS links. System default leaves normal Obsidian behavior unchanged.',
+        control: {
+          type: 'dropdown',
+          key: 'primaryBrowser',
+          defaultValue: 'system',
+          options: BROWSERS
+        }
+      },
+      {
+        name: 'Alternative browser modifier',
+        desc: 'Hold this key while opening a link to use the alternative browser.',
+        control: {
+          type: 'dropdown',
+          key: 'alternateModifier',
+          defaultValue: 'none',
+          options: MODIFIERS
+        }
+      },
+      {
+        name: 'Alternative browser',
+        desc: 'Used only while the selected modifier is held.',
+        control: {
+          type: 'dropdown',
+          key: 'alternateBrowser',
+          defaultValue: 'system',
+          options: BROWSERS
+        }
+      },
+      {
+        name: 'Custom executable',
+        desc: 'Executable path or command on PATH (without quotes or additional arguments). The URL is passed separately.',
+        visible: () =>
+          this.plugin.settings.primaryBrowser === 'custom' ||
+          this.plugin.settings.alternateBrowser === 'custom',
+        control: {
+          type: 'text',
+          key: 'customExecutable',
+          placeholder: 'e.g. /usr/bin/firefox'
+        }
+      }
+    ];
+  }
+
+  async setControlValue(key: string, value: unknown): Promise<void> {
+    await super.setControlValue(key, value);
+    if (key === 'primaryBrowser' || key === 'alternateBrowser') {
+      this.refreshDomState();
+    }
+  }
+
+  // Fallback for Obsidian versions older than 1.13.0.
   display(): void {
     const { containerEl } = this;
     containerEl.empty();

@@ -40,7 +40,7 @@ To update a manual install, replace **both** `main.js` and `manifest.json`, then
 Requires Node.js **22+** and npm.
 
 ```bash
-npm install
+npm ci
 npm test
 npm run build
 ```
