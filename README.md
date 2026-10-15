@@ -2,7 +2,7 @@
 
 Choose which web browser opens HTTP and HTTPS links in the Obsidian desktop app, independently of the operating system's default browser.
 
-> **Status:** Public beta 0.2.1. Tested successfully on Windows with Chrome as the primary browser and Edge for Alt-click. Linux and macOS remain untested. Submitted for Community directory review; not yet approved.
+> **Status:** Public beta 0.2.2. Tested successfully on Windows with Chrome as the primary browser and Edge for Alt-click. Linux and macOS remain untested. Submitted for Community directory review; not yet approved.
 
 ## Features
 
@@ -56,6 +56,12 @@ The build produces `main.js` at the repository root.
 5. Open **Settings → External Browser** and select your browser.
 
 To develop with automatic recompilation, run `npm run dev`, then reload the plugin in Obsidian after edits.
+
+## Security review and reproducible releases
+
+The plugin launches browser executables via Node.js `child_process.spawn` with `shell: false`. This triggers an expected security disclosure in automated plugin reviews because the plugin starts external programs. The executable is chosen from supported browsers or the user-provided custom executable, and the HTTP(S) URL is passed as a separate argument without shell interpolation.
+
+Dependencies are locked in `package-lock.json`, builds use `npm ci`, and release artifacts include GitHub build provenance attestations. Obsidian 1.13+ uses searchable declarative settings; older versions continue using the legacy settings UI.
 
 ## Privacy and security
 
